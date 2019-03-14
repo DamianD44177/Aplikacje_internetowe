@@ -1,21 +1,37 @@
 #container{
+    /* rozmiar całego kontenera */
     width: 600px;
     background-color: black;
     margin: 0 auto;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;                    /* centrowanie w poziomie */
 }
 
-div{
-    width: 75%;
+#container > div{
     background-color: aquamarine;
+    transition: all .3s linear;
+    /* rozmiary na stale */
+    height: 100px;
+    width: 100px;
 }
 
-div.test {
-    height: 30px;
+/* dla II-go dziecka */
+#container > div:nth-child(2){
     background-color: deeppink;
-    transition: height .3s linear;
+    height: 50px;
 }
 
-div.test:hover {
-    height: 300px;
-    transform: rotate(90deg);
+/* dla III-go dziecka */
+#container > div:nth-child(3){
+    background-color: goldenrod;
+    height: 75px;
 }
+
+/* animacja */
+#container > div:hover{
+    background-color: blueviolet;
+    width: 150px;
+}
+
+/* flex grow 1x, 2x, 3x */
