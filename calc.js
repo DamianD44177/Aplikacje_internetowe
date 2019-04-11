@@ -1,86 +1,3 @@
-/*
-#container > div:nth-child(1){
-    grid-row: 4;
-    grid-column: 1;
-}
-
-#container > div:nth-child(2){
-    grid-row: 4;
-    grid-column: 2;
-}
-
-#container > div:nth-child(3){
-    grid-row: 4;
-    grid-column: 3;
-}
-
-#container > div:nth-child(4){
-    grid-row: 3;
-    grid-column: 1;
-}
-
-#container > div:nth-child(5){
-    grid-row: 3;
-    grid-column: 2;
-}
-
-#container > div:nth-child(6){
-    grid-row: 3;
-    grid-column: 3;
-}
-
-#container > div:nth-child(7){
-    grid-row: 2;
-    grid-column: 1;
-}
-
-#container > div:nth-child(8){
-    grid-row: 2;
-    grid-column: 2;
-}
-
-#container > div:nth-child(9){
-    grid-row: 2;
-    grid-column: 3;
-}
-
-#container > div:nth-child(10){
-    grid-row: 5;
-    grid-column: 1/3;
-}
-
-#container > div:nth-child(11){
-    grid-row: 2;
-    grid-column: 4;
-}
-
-#container > div:nth-child(12){
-    grid-row: 3;
-    grid-column: 4;
-}
-
-#container > div:nth-child(13){
-    grid-row: 4;
-    grid-column: 4;
-}
-
-#container > div:nth-child(14){
-    grid-row: 5;
-    grid-column: 4;
-}
-
-#container > div:nth-child(15){
-    grid-row: 5;
-    grid-column: 3;
-}
-
-#container > div:nth-child(16){
-    grid-row: 1;
-    grid-column: 1/5;
-}
-
-*/
-
 
 
 const fields = [
@@ -102,6 +19,63 @@ const fields = [
     { txt: 'Display', col: '1/5', row: 1}
  ];
 
+ let clearFlag = false;
+ let memory = 0;
+ let op = 0;
+
+ const handleClick = ev => {        //EventListener wywołuje event-y
+    const disp = document.getElementById('display');
+    const key = ev.target.textContent;          //target przechowuje elem który klikneliśmy
+
+    switch (key) {
+        case 'C':
+            disp.textContent = 0;
+            memory = 0;
+            op = 0;
+        break;
+
+
+        case '+':
+        case '-':
+            if (op === 0){
+                memory = parseFloat(disp.textContent);
+                //parseFloat(string: string): number -> Converts a string to a floating-point number.
+            } else {
+                memory += op * parseFloat(disp.textContent);
+            }
+            op = key === "+" ? 1 : -1 ;
+            clearFlag=true;
+        break;
+
+
+        case '=':
+            if (op === 0){
+                memory = parseFloat(disp.textContent);
+            } else {
+                memory += op * parseFloat(disp.textContent);
+            }
+            op = 0;
+            disp.textContent = memory;
+            clearFlag = false;
+        break;
+
+
+
+        default:
+            // === porównanie wartości razem z typem zmiennej
+            if (key === '0' && disp.textContent === '0') return;
+            //gdy wciśnięta kropka ... pomiń
+            if (key === '.' && disp.textContent.includes('.') || clearFlag) return;
+            if ( (key !== '.' && disp.textContent === '0') || clearFlag ){
+                disp.textContent = key;
+                clearFlag = false;
+            } else {
+                disp.textContent += key;
+            }
+    }
+}
+
+
 const init = () => {
     const container = document.createElement('div');
     container.id = 'container';
@@ -113,11 +87,9 @@ const init = () => {
         button.style.gridRow = el.row;
         if (el.txt === 'Display'){
             button.id = 'display';
+            button.textContent = 0;
         } else {
-            button.addEventListener('click', ev => {        //EventListener wywołuje event-y
-                const d = document.getElementById('display');
-                d.textContent = ev.target.textContent;
-            });
+            button.addEventListener('click', handleClick);
         }
 
         container.appendChild(button);
@@ -127,6 +99,6 @@ const init = () => {
 
 }
 
-window.addEventListener('DOMContentLoaded', init);
+window.addEventListener('DOMContentLoaded', init);  //nazwa iventu i funkcja
 
 
