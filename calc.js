@@ -65,7 +65,7 @@ const fields = [
             // === porównanie wartości razem z typem zmiennej
             if (key === '0' && disp.textContent === '0') return;
             //gdy wciśnięta kropka ... pomiń
-            if (key === '.' && disp.textContent.includes('.') || clearFlag) return;
+            if (key === '.' && (disp.textContent.includes('.') || clearFlag)) return;
             if ( (key !== '.' && disp.textContent === '0') || clearFlag ){
                 disp.textContent = key;
                 clearFlag = false;
