@@ -1,104 +1,104 @@
 
-
 const fields = [
-    { txt: 1, col: 1, row: 4},
-    { txt: 2, col: 2, row: 4},
-    { txt: 3, col: 3, row: 4},
-    { txt: 4, col: 1, row: 3},
-    { txt: 5, col: 2, row: 3},
-    { txt: 6, col: 3, row: 3},
-    { txt: 7, col: 1, row: 2},
-    { txt: 8, col: 2, row: 2},
-    { txt: 9, col: 3, row: 2},
-    { txt: 0, col: '1/3', row: 5},
-    { txt: 'C', col: 4, row: 2},
-    { txt: '+', col: 4, row: 3},
-    { txt: '-', col: 4, row: 4},
-    { txt: '=', col: 4, row: 5},
-    { txt: '.', col: 3, row: 5},
-    { txt: 'Display', col: '1/5', row: 1}
- ];
-
- let clearFlag = false;
- let memory = 0;
- let op = 0;
-
- const handleClick = ev => {        //EventListener wywołuje event-y
-    const disp = document.getElementById('display');
-    const key = ev.target.textContent;          //target przechowuje elem który klikneliśmy
-
-    switch (key) {
-        case 'C':
-            disp.textContent = 0;
-            memory = 0;
-            op = 0;
-        break;
+    { txt: 1, col: 1, row: 4 },
+    { txt: 2, col: 2, row: 4 },
+    { txt: 3, col: 3, row: 4 },
+    { txt: 4, col: 1, row: 3 },
+    { txt: 5, col: 2, row: 3 },
+    { txt: 6, col: 3, row: 3 },
+    { txt: 7, col: 1, row: 2 },
+    { txt: 8, col: 2, row: 2 },
+    { txt: 9, col: 3, row: 2 },
+    { txt: 0, col: '1/3', row: 5 },
+    { txt: 'C', col: 4, row: 2 },
+    { txt: '+', col: 4, row: 3 },
+    { txt: '-', col: 4, row: 4 },
+    { txt: '=', col: 4, row: 5 },
+    { txt: '.', col: 3, row: 5 },
+    { txt: 'Display', col: '1/5', row: 1 }
+];
 
 
-        case '+':
-        case '-':
-            if (op === 0){
-                memory = parseFloat(disp.textContent);
-                //parseFloat(string: string): number -> Converts a string to a floating-point number.
+
+
+class Calc {
+    constructor() {
+        this.clearFlag = false;
+        this.memory = 0;
+        this.op = 0;
+        this.container = document.createElement('div');
+        this.container.id = 'container';
+        this.display = null;
+        this.createButtons();
+
+    }
+    createButtons() {
+        fields.forEach(el => {
+            const button = document.createElement('div');
+            button.textContent = el.txt;
+            button.style.gridColumn = el.col;
+            button.style.gridRow = el.row;
+            if (el.txt === 'Display') {
+                this.display=button;
+                button.textContent = 0;
             } else {
-                memory += op * parseFloat(disp.textContent);
+                button.addEventListener('click', ev => this.handleClick(ev));
             }
-            op = key === "+" ? 1 : -1 ;
-            clearFlag=true;
-        break;
+            this.container.appendChild(button);
+        });
+    }
+    init() {
+        document.body.appendChild(this.container);
+    }
+    set disp(val) {
+        this.display.textContent = val;
+    }
+    get disp(){
+        return  parseFloat(this.display.textContent);
+    }
+    handleClick(ev) {
+        const key = ev.target.textContent;
+        switch (key) {
+            case 'C':
+                this.clearFlag = false;
+                this.disp = 0;
+                this.memory = 0;
+                this.op = 0;
+
+                break;
+            case '+':
+            case '-':
+                if (this.op === 0) {
+                    this.memory = this.disp;
+                } else {
+                    this.memory += this.op * this.disp;
+                }
+                this.op = key === '+' ? 1 : -1;
+                this.clearFlag = true;
+                break;
+            case '=':
+                if (this.op === 0) {
+                    this.memory = this.disp;
+                } else {
+                    this.memory += this.op * this.disp;
+                }
+                this.op = 0;
+                this.disp = this.memory;
+                break;
+            default:
+                if (key === '0' && this.disp === 0) return;
+                if (key === '.' && disp.textContent.includes('.') || this.clearFlag) return;
+                if ((key !== '.' && this.disp === 0) || this.clearFlag) {
+                    this.disp = key;
+                    this.clearFlag = false;
+                } else {
+                    this.disp += key;
+                }
 
 
-        case '=':
-            if (op === 0){
-                memory = parseFloat(disp.textContent);
-            } else {
-                memory += op * parseFloat(disp.textContent);
-            }
-            op = 0;
-            disp.textContent = memory;
-            clearFlag = false;
-        break;
-
-
-
-        default:
-            // === porównanie wartości razem z typem zmiennej
-            if (key === '0' && disp.textContent === '0') return;
-            //gdy wciśnięta kropka ... pomiń
-            if (key === '.' && (disp.textContent.includes('.') || clearFlag)) return;
-            if ( (key !== '.' && disp.textContent === '0') || clearFlag ){
-                disp.textContent = key;
-                clearFlag = false;
-            } else {
-                disp.textContent += key;
-            }
+        }
     }
 }
+const calc = new Calc();
 
-
-const init = () => {
-    const container = document.createElement('div');
-    container.id = 'container';
-
-    fields.forEach(el => {
-        const button = document.createElement('div');
-        button.textContent = el.txt;
-        button.style.gridColumn = el.col;
-        button.style.gridRow = el.row;
-        if (el.txt === 'Display'){
-            button.id = 'display';
-            button.textContent = 0;
-        } else {
-            button.addEventListener('click', handleClick);
-        }
-
-        container.appendChild(button);
-    });
-
-    document.body.appendChild(container);
-
-}
-
-window.addEventListener('DOMContentLoaded', init);  //nazwa iventu i funkcja
-
-
+window.addEventListener('DOMContentLoaded', () => calc.init());
